@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>视网膜OCT图像分析</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="/static/assets/img/favicon.png" rel="icon">
+    <link href="/static/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Vendor CSS Files -->
+    <link href="/static/assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="/static/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="/static/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="/static/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+    <link href="/static/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <script src="../static/js/echarts.js" charset='utf-8'></script>
+
+    <!-- Template Main CSS File -->
+    <link href="/static/assets/css/style.css" rel="stylesheet">
+    <script src="/static/js/jquery.min.js" type="text/javascript" charset='utf-8'></script>
+</head>
+
+<body>
+
+<!-- ======= Header ======= -->
+<header id="header" class="header fixed-top" style="background-color: #338b67; padding: 8px 0;">
+    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+
+        <a href="/" class="logo d-flex align-items-center">
+            <span style="color: rgb(237, 247, 253);">Eye-Disease-Analysis</span>
+        </a>
+
+        <nav id="navbar" class="navbar">
+            <ul>
+                <li><a class="nav-link scrollto " href="/" style="font-size: 20px;">首页</a></li>
+                <li><a class="nav-link scrollto" href="/predict/test_predict" style="font-size: 20px;">眼底彩照在线分析</a>
+                </li>
+                <li><a class="nav-link scrollto active" href="#" style="font-size: 20px;">OCT图像在线分析</a></li>
+                <li><a class="nav-link scrollto" href="/segment/test_segment" style="font-size: 20px;">图像分割</a>
+                </li>
+                <li><a class="nav-link scrollto" href="/upload" style="font-size: 20px;">上传记录</a></li>
+            </ul>
+            <i class="bi bi-list mobile-nav-toggle"></i>
+        </nav>
+    </div>
+</header>
+
+<main id="main" style="margin-top: 50px;">
+    <section id="icon-boxes" class="icon-boxes">
+        <div class="container">
+
+            <h3 class="page-header" style="margin-top:30px;">视网膜疾病分类预测</h3>
+            <div class="row" style="margin-top: 20px;">
+                <div class="form-group">
+                    <div class="input-group">
+                        <span style="font-size: 20px; margin-right: 10px;">上传待测试视网膜图像:</span>
+                        <input id='location' class="form-control" onclick="$('#i-file').click();">
+                        <label class="input-group-btn" style="width: 200px;">
+                            <input type="button" id="i-check" value="浏览文件" class="btn btn-primary"
+                                   onclick="$('#i-file').click();">
+                        </label>
+
+                        <input type="submit" value="提交预测" class="btn btn-success" id="submit"/>
+                    </div>
+                    <input type="file" name="file" id='i-file' accept=".png, .jpg, .jpeg"
+                           onchange="$('#location').val($('#i-file').val());" style="display: none">
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 30px;">
+                <div class="col-lg-1">
+                    <img id="upload_test_image" style="width: 600px; height: 450px;">
+                </div>
+                <div class="col-lg-4"></div>
+                <div class="col-lg-7">
+                    <div class="row" style="margin-left: 50px;">
+                        <p><b id="predict_class" style="font-size: 24px;"></b></p>
+                        <div class="col-xs-12" style="height: 450px;width: 100%" id="main1"></div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div id="report"
+                         style="margin-top: 20px; padding: 15px; border: 1px solid #DDD; background-color: #F9F9F9;">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div id="description"
+                         style="margin-top: 20px; padding: 15px; border: 1px solid #DDD; background-color: #F9F9F9;">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</main>
+
+<footer id="footer" class="footer">
+    <div class="container">
+        <div class="copyright">
+            &copy; Copyright <strong><span>Eye-Disease-Analysis</span></strong>. All Rights Reserved
+        </div>
+    </div>
+</footer><!-- End Footer -->
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center">
+    <i class="bi bi-arrow-up-short"></i>
+</a>
+
+<!-- Vendor JS Files -->
+<script src="/static/assets/vendor/purecounter/purecounter_vanilla.js"></script>
+<script src="/static/assets/vendor/aos/aos.js"></script>
+<script src="/static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/static/assets/vendor/glightbox/js/glightbox.min.js"></script>
+<script src="/static/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+<script src="/static/assets/vendor/swiper/swiper-bundle.min.js"></script>
+<script src="/static/assets/vendor/php-email-form/validate.js"></script>
+
+<!-- Template Main JS File -->
+<script src="/static/assets/js/main.js"></script>
+<script type="text/javascript">
+    $(function () {
+        // 判断是否登录
+        $.get('http://127.0.0.1:5000/check_login', {},
+            function (data) {
+                console.log(data);
+                if (data['login'] === false) {
+                    window.location = '/'
+                }
+            }
+        );
+
+        $('#submit').click(function () {
+            var formData = new FormData();
+            formData.append("file", $('#i-file')[0].files[0]);
+
+            $.ajax({
+                url: 'http://127.0.0.1:5000/predict2/submit_and_predict',
+                dataType: 'json',
+                type: 'POST',
+                async: false,
+                data: formData,
+                processData: false, // 使数据不做处理
+                contentType: false, // 不要设置Content-Type请求头
+                success: function (data) {
+                    console.log('success....')
+                    console.log(data)
+                    $('#upload_test_image').attr("src", "http://127.0.0.1:5000/" + data['upload_image'])
+                    $('#predict_class').text("预测结果：" + data['predict'])
+
+                    if (data['predict'] === "健康（HEALTHY）") {
+                        $('#predict_class').css("color", "green");
+                    } else {
+                        $('#predict_class').css("color", "red");
+                    }
+
+                    // 生成图像性状报告
+                    imgReport2(data);
+                    // 生成疾病描述报告
+                    diseaseDesc2(data);
+
+                    var dom = document.getElementById("main1");
+                    var myChart = echarts.init(dom);
+
+                    var pred_pros = [];
+                    for (var i = 0; i < data['pred_pros'].length; i++) {
+                        pred_pros.push((data['pred_pros'][i] * 100).toFixed(2))
+                    }
+
+                    var option = {
+                        backgroundColor: '#F9F9F9',
+                        title: {
+                            top: '3%',
+                            text: "模型预测不同类别的概率分布",
+                            left: 'center'
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            }
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '3%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        yAxis: {
+                            name: '预测概率',
+                            type: 'value',
+                            boundaryGap: [0, 0.01],
+
+                        },
+                        xAxis: {
+                            type: 'category',
+                            data: data['disease_labels'],
+                            axisLabel: {
+                                interval: 0,
+                                rotate: 45, // 旋转文字，避免重叠
+                                fontSize: 12 // 设置文字大小
+                            }
+                        },
+                        series: {
+                            type: 'bar',
+                            data: pred_pros,
+                            itemStyle: {
+                                color: function (params) {
+                                    // 根据柱子的索引动态设置颜色
+                                    var colors = ['#AD9EC7', '#DA945F', '#8EB982', '#6633FF',
+                                        '#FF6EC7', '#B65A75', '#4D4DFF', '#F0F0F0'];
+                                    return colors[params.dataIndex]; // dataIndex为柱子的索引
+                                }
+                            },
+                            label: {
+                                show: true, //开启显示
+                                position: 'top', //在上方显示
+                                formatter: '{c}%',//显示百分号
+                                textStyle: { //数值样式
+                                    color: 'orange',//字体颜色
+                                    fontSize: 20//字体大小
+                                }
+                            }
+                        }
+                    };
+
+                    if (option && typeof option === "object") {
+                        myChart.setOption(option, true);
+                    }
+
+                },
+                error: function (response) {
+                    if (response.status === 400 && response.responseJSON && response.responseJSON.error) {
+                        alert(response.responseJSON.error); // 提示用户文件已存在本地
+                    } else {
+                        console.log('error....')
+                        console.log(response);
+                    }
+                }
+            });
+
+        });
+    });
+
+    // 生成图像性状报告
+    function imgReport2(data) {
+        var report = "<h3>图像性状报告</h3><br>";
+        report += "<span><strong>图片名称：</strong>" + data['upload_image'].split('/').pop() + "</span><br>";
+        report += "<span><strong>预测疾病：</strong>" + data['predict'] + "</span><br><br>";
+        report += "<span><strong>性状分析：</strong></span>";
+        report += "<p>";
+
+        // 根据预测的疾病类别添加性状分析
+        switch (data['predict']) {
+            case '黄斑变性（AMD）':
+                report += "瘢痕区表现为较为均匀的高发射病灶，周围视网膜少有出血和积液，常伴邻近组织的萎缩和变薄。";
+                break;
+            case '脉络膜新生血管（CNV）':
+                report += "黄斑区神经上皮脱离，见液性暗腔，中心凹神经下面见一团高反射。";
+                break;
+            case '中央浆液性视网膜病变（CSR）':
+                report += "神经上皮隆起，其下液体呈无反射信号的液性暗区或者可见点片状或者稍高反射信号。";
+                break;
+            case '糖尿病黄斑水肿（DME）':
+                report += "黄斑中心凹视网膜呈囊腔样改变，囊腔内反射信号降低，视网膜内表面隆起。";
+                break;
+            case '糖尿病视网膜病变（DR）':
+                report += "瘢痕区表现为较为均匀的高发射病灶，周围视网膜少有出血和积液，常伴邻近组织的萎缩和变薄。";
+                break;
+            case '玻璃膜疣（DRUSEN）':
+                report += "硬性玻璃膜疣为多个小的色素上皮隆起,反射增强；";
+                report += "软性玻璃膜疣为多个大小不等、驼峰状的色素上皮隆起，较大的为融合病灶，脱离的色素上皮下方可见中等反射信号，并且可见纤细的连续的Bruch膜。";
+                break;
+            case '黄斑裂孔（MH）':
+                report += "黄斑中心凹处全视网膜缺损或神经上皮层内层组织缺失，外层组织尚存，形成黄斑裂孔。";
+                break;
+            case '正常（NORMAL）':
+                report += "未见明显异常。";
+                break;
+        }
+
+        report += "</p>";
+        report += "<h3>建议：</h3>";
+        report += "<p>请咨询专业医生进行进一步诊断，定期进行眼科检查。</p>";
+
+        $('#report').html(report);
+    }
+
+    // 生成疾病描述报告
+    function diseaseDesc2(data) {
+        var description = "<h3>疾病描述</h3><br>";
+        description += "<span><strong>疾病名称：</strong>" + data['predict'] + "</span><br><br>";
+        description += "<span><strong>疾病简介：</strong></span>";
+        description += "<p>";
+
+        // 根据预测的疾病类别添加疾病描述
+        switch (data['predict']) {
+            case '黄斑变性（AMD）':
+                description += "黄斑变性是一种主要影响黄斑区的疾病，病理机制主要为黄斑区结构的衰老性改变。常见于老年人，分为干性和湿性两种类型。" +
+                    "主要症状包括能引起不可逆的中心视力的下降等。年龄越大，发病率越高。";
+                break;
+            case '脉络膜新生血管（CNV）':
+                description += "脉络膜新生血管是指脉络膜内异常血管生长，可能与多种眼部疾病相关。" +
+                    "主要症状包括早期无自觉症状，视力减退、视物变形，出现中心或旁中心暗点，永久性视力障碍等。";
+                break;
+            case '中央浆液性视网膜病变（CSR）':
+                description += "中央浆液性视网膜病变是是指黄斑区或者后极部由于色素上皮屏障功能受损，液体进入神经上皮下导致的神经上皮脱离，常见于中青年。" +
+                    "主要症状包括中心视力突然下降，自觉受害眼视物蒙眬，景色衰暗，视物变小，直线变得扭曲等。";
+                break;
+            case '糖尿病黄斑水肿（DME）':
+                description += "糖尿病黄斑水肿是由于糖尿病引起的黄斑中心凹一个视盘直径范围内的细胞外液积聚所致的视网膜增厚或硬性渗出沉积。" +
+                    "主要症状包括视力下降、视物变形等。";
+                break;
+            case '糖尿病视网膜病变（DR）':
+                description += "糖尿病视网膜病变是糖尿病的常见并发症之一，主要影响视网膜的微血管系统。" +
+                    "主要症状包括视力模糊、眼前黑影、视物变形等。";
+                break;
+            case '玻璃膜疣（DRUSEN）':
+                description += "玻璃膜疣是RPE基底膜与Bruch膜之间聚集的嗜酸性染色阳性的玻璃物质，黄白色，分为硬性drusen和软性drusen。" +
+                    "主要症状包括视力轻度下降或视物变形等。";
+                break;
+            case '黄斑裂孔（MH）':
+                description += "黄斑裂孔是指黄斑部视网膜内界膜至感光细胞层发生的组织缺损，严重损害患者的中心视力。可能与年龄、外伤等因素有关。" +
+                    "主要症状包括中心视力下降、视物变形等。";
+                break;
+            case '正常（NORMAL）':
+                description += "未发现明显异常，建议定期进行眼科检查，保持良好的用眼习惯。";
+                break;
+        }
+
+        description += "</p>";
+        $('#description').html(description);
+    }
+</script>
+</body>
+
+</html>

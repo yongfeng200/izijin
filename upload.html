@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>OCT影像上传记录</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="/static/assets/img/favicon.png" rel="icon">
+    <link href="/static/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Vendor CSS Files -->
+    <link href="/static/assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="/static/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="/static/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+    <link href="/static/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <script src="../static/js/echarts.js" charset='utf-8'></script>
+
+    <!-- Template Main CSS File -->
+    <link href="/static/assets/css/style.css" rel="stylesheet">
+    <link href="/static/assets/css/table.css" rel="stylesheet">
+    <script src="/static/js/jquery.min.js" type="text/javascript" charset='utf-8'></script>
+</head>
+
+<body>
+<header id="header" class="header fixed-top" style="background-color: #338b67; padding: 8px 0;">
+    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+        <a href="/" class="logo d-flex align-items-center">
+            <span style="color: rgb(237, 245, 253);">Eye-Disease-Analysis</span>
+        </a>
+        <nav id="navbar" class="navbar">
+            <ul>
+                <li><a class="nav-link scrollto" href="/" style="font-size: 20px;">首页</a></li>
+                <li><a class="nav-link scrollto" href="/predict/test_predict" style="font-size: 20px;">眼底彩照在线分析</a>
+                </li>
+                <li><a class="nav-link scrollto" href="/predict2/test_predict2" style="font-size: 20px;">OCT图像在线分析</a>
+                </li>
+                <li><a class="nav-link scrollto" href="/segment/test_segment" style="font-size: 20px;">图像分割</a>
+                </li>
+                <li><a class="nav-link scrollto active" href="/upload" style="font-size: 20px;">上传记录</a></li>
+            </ul>
+            <i class="bi bi-list mobile-nav-toggle"></i>
+        </nav>
+    </div>
+</header>
+
+<main id="main" style="margin-top: 50px;">
+    <section class="container">
+        <h2 style="text-align: center; margin-bottom: 30px;">上传图像记录</h2>
+
+        <!-- 查询框 -->
+        <div class="search-container">
+            <div class="search-box">
+                <label style="margin-top:8px;text-align: center;" for="diseaseSelect">疾病类别:</label>
+                <select id="diseaseSelect">
+                    <option value="">全部</option>
+                    <option value="白内障（Cataract）">白内障</option>
+                    <option value="糖尿病视网膜病变（Diabetic Retinopathy）">糖尿病视网膜病变（眼底）</option>
+                    <option value="青光眼（Glaucoma）">青光眼</option>
+                    <option value="高血压（Hypertension）">高血压</option>
+                    <option value="近视（Myopia）">近视</option>
+                    <option value="正常（Normal）">正常（眼底）</option>
+                    <option value="黄斑变性（AMD）">黄斑变性</option>
+                    <option value="脉络膜新生血管（CNV）">脉络膜新生血管</option>
+                    <option value="中央浆液性视网膜病变（CSR）">中央浆液性视网膜病变</option>
+                    <option value="糖尿病黄斑水肿（DME）">糖尿病黄斑水肿</option>
+                    <option value="糖尿病视网膜病变（DR）">糖尿病视网膜病变（视网膜）</option>
+                    <option value="玻璃膜疣（DRUSEN）">玻璃膜疣</option>
+                    <option value="黄斑裂孔（MH）">黄斑裂孔</option>
+                    <option value="健康（HEALTHY）">健康（视网膜）</option>
+                </select>
+
+                <label style="margin-top:8px;text-align: center;" for="userInput">上传者:</label>
+                <input type="text" id="userInput" placeholder="输入用户名">
+
+                <button id="searchBtn">查询</button>
+            </div>
+            <div>
+                <label for="perPageSelect" style="margin-top:8px;text-align: center;">每页显示</label>
+                <select id="perPageSelect">
+                    <option value="5" selected>5条</option>
+                    <option value="10">10条</option>
+                    <option value="15">15条</option>
+                    <option value="20">20条</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                <tr>
+                    <th>图片名称</th>
+                    <th>图片</th>
+                    <th>疾病类别</th>
+                    <th>上传者</th>
+                    <th>上传时间</th>
+                </tr>
+                </thead>
+                <tbody id="uploads">
+                </tbody>
+            </table>
+
+            <!-- 分页控件 -->
+            <div class="pager">
+                <button id="prePage" class="page-link">上一页</button>
+                <span id="pageInfo" style="margin-top: 5px">第 1 页，共 1 页</span>
+                <button id="nextPage" class="page-link">下一页</button>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer id="footer" class="footer">
+    <div class="container">
+        <div class="copyright">
+            &copy; Copyright <strong><span>Eye-Disease-Analysis</span></strong>. All Rights Reserved
+        </div>
+    </div>
+</footer>
+
+<script src="/static/js/jquery.min.js" type="text/javascript" charset='utf-8'></script>
+<script>
+    let currentPage = 1;
+    let totalPages = 1;
+    let items = 5;
+    let currentDisease = '';
+    let currentUser = '';
+
+    $(document).ready(function () {
+
+        loadUploads(currentPage, currentDisease, currentUser);
+
+        // 查询按钮点击事件
+        $('#searchBtn').click(function () {
+            currentDisease = $('#diseaseSelect').val();
+            currentUser = $('#userInput').val();
+            currentPage = 1;
+            loadUploads(currentPage, currentDisease, currentUser);
+        });
+
+        // 上一页
+        $('#prePage').click(function () {
+            if (currentPage > 1) {
+                currentPage--;
+                loadUploads(currentPage, currentDisease, currentUser);
+            }
+        });
+
+        // 下一页
+        $('#nextPage').click(function () {
+            if (currentPage < totalPages) {
+                currentPage++;
+                loadUploads(currentPage, currentDisease, currentUser);
+            }
+        });
+
+        // 添加每页显示条数的下拉框事件监听
+        $('#perPageSelect').change(function () {
+            items = parseInt($(this).val());
+            currentPage = 1; // 重置到第一页
+            loadUploads(currentPage, currentDisease, currentUser);
+        });
+    });
+
+    function loadUploads(page, disease, user) {
+        $.get('http://127.0.0.1:5000/get_uploads', {
+            page: page,
+            per_page: items,
+            disease_class: disease,
+            user_name: user
+        }, function (data) {
+            var table = $('#uploads');
+            table.empty();
+
+            data.uploads.forEach(function (item) {
+                var imagePath = item.image_path;
+                var imageName = item.image_name;
+                var imageURL;
+
+                // 提取子文件夹名称
+                var subFolder = imagePath.split('/').slice(-2, -1)[0];
+
+                // 构建图片的URL
+                if (subFolder === 'predict_test') {
+                    imageURL = 'http://127.0.0.1:5000/static/img/predict_test/' + imagePath.split('/predict_test/')[1];
+                } else if (subFolder === 'predict_test2') {
+                    imageURL = 'http://127.0.0.1:5000/static/img/predict_test2/' + imagePath.split('/predict_test2/')[1];
+                } else {
+                    // 默认情况
+                    imageURL = 'http://127.0.0.1:5000/static/img/' + imagePath;
+                }
+
+                table.append(`
+                    <tr>
+                        <td>${imageName}</td>
+                        <td><img src="${imageURL}" style="width: 150px; height: 100px;"></td>
+                        <td>${item.disease_class}</td>
+                        <td>${item.user_name}</td>
+                        <td>${item.upload_time}</td>
+                    </tr>
+                `);
+            });
+
+            // 更新分页信息
+            totalPages = data.totalPages;
+            $('#pageInfo').text(`第 ${page} 页，共 ${totalPages} 页`);
+
+            // 禁用或启用上一页/下一页按钮
+            if (page === 1) {
+                $('#prePage').prop('disabled', true);
+            } else {
+                $('#prePage').prop('disabled', false);
+            }
+
+            if (page === totalPages) {
+                $('#nextPage').prop('disabled', true);
+            } else {
+                $('#nextPage').prop('disabled', false);
+            }
+        });
+    }
+</script>
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center">
+    <i class="bi bi-arrow-up-short"></i>
+</a>
+
+</body>
+</html>

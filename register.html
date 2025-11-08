@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Eye-Disease-Analysis - 用户注册</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="/static/assets/img/favicon.png" rel="icon">
+    <link href="/static/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Vendor CSS Files -->
+    <link href="/static/assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="/static/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="/static/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="/static/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+    <link href="/static/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="/static/assets/css/style.css" rel="stylesheet">
+    <script src="/static/js/jquery.min.js" type="text/javascript" charset='utf-8'></script>
+
+    <style>
+        .register-container {
+            max-width: 600px;
+            margin: 130px auto 35px;
+            padding: 30px;
+            background-color: #F8F8F8;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            height: 45px;
+            border-radius: 5px;
+        }
+
+        .btn-primary {
+            background-color: #338b67;
+            border-color: #338b67;
+        }
+
+        .btn-primary:hover {
+            background-color: #2a6d56;
+            border-color: #2a6d56;
+        }
+
+        .captcha-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .captcha-input {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .captcha-img {
+            height: 45px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<header id="header" class="header fixed-top" style="background-color: #338b67; padding: 8px 0;">
+    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+
+        <a href="/" class="logo d-flex align-items-center">
+            <span style="color: rgb(237, 245, 253);">Eye-Disease-Analysis</span>
+        </a>
+
+        <nav id="navbar" class="navbar">
+            <ul>
+                <li><a class="nav-link scrollto active" href="/" style="font-size: 20px;">首页</a></li>
+            </ul>
+            <i class="bi bi-list mobile-nav-toggle"></i>
+        </nav>
+    </div>
+</header>
+
+<main id="main">
+    <div class="register-container">
+        <h2 style="text-align: center; margin-bottom: 30px;">用户注册</h2>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="username" style="font-size: 16px;">用户名：</label>
+                <input type="text" class="form-control" id="username" placeholder="请输入用户名">
+            </div>
+            <div class="form-group">
+                <label for="password" style="font-size: 16px;">密码：</label>
+                <input type="password" class="form-control" id="password" placeholder="请输入密码">
+                <small id="passwordHelp" class="form-text text-muted">
+                    密码为6-20位的字母与数字的组合
+                </small>
+            </div>
+            <div class="form-group">
+                <label for="name" style="font-size: 16px;">真实姓名：</label>
+                <input type="text" class="form-control" id="name" placeholder="请输入真实姓名">
+            </div>
+            <div class="form-group">
+                <label for="phone" style="font-size: 16px;">手机号码：</label>
+                <input type="text" class="form-control" id="phone" placeholder="请输入手机号码">
+            </div>
+            <div class="form-group captcha-container">
+                <label for="captcha" style="font-size: 16px;">验证码：</label>
+                <input type="text" class="form-control captcha-input" id="captcha" placeholder="请输入验证码">
+                <img id="captchaImg" src="" class="captcha-img" onclick="refreshCaptcha()">
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <button type="button" class="btn btn-primary" id="reg_button" style="width: 150px;">
+                    注册
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer id="footer" class="footer">
+    <div class="container">
+        <div class="copyright">
+            &copy; Copyright <strong><span>Eye-Disease-Analysis</span></strong>. All Rights Reserved
+        </div>
+    </div>
+</footer>
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center">
+    <i class="bi bi-arrow-up-short"></i>
+</a>
+
+<!-- Vendor JS Files -->
+<script src="/static/assets/vendor/purecounter/purecounter_vanilla.js"></script>
+<script src="/static/assets/vendor/aos/aos.js"></script>
+<script src="/static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/static/assets/vendor/glightbox/js/glightbox.min.js"></script>
+<script src="/static/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+<script src="/static/assets/vendor/swiper/swiper-bundle.min.js"></script>
+<script src="/static/assets/vendor/php-email-form/validate.js"></script>
+
+<!-- Template Main JS File -->
+<script src="/static/assets/js/main.js"></script>
+
+<script type="text/javascript">
+    // 页面加载时加载验证码
+    window.onload = function () {
+        loadCaptcha();
+    };
+
+    // 加载验证码
+    function loadCaptcha() {
+        $.getJSON('/generate_captcha', function (data) {
+            // 更新验证码图片
+            $('#captchaImg').attr('src', 'data:image/png;base64,' + data.image);
+            // 保存验证码到全局变量
+            window.currentCaptcha = data.code;
+        });
+    }
+
+    // 刷新验证码
+    function refreshCaptcha() {
+        loadCaptcha();
+    }
+
+    // 注册按钮点击事件
+    $('#reg_button').click(function () {
+        const username = $('#username').val();
+        const password = $('#password').val();
+        const name = $('#name').val();
+        const phone = $('#phone').val();
+        const captcha = $('#captcha').val();
+
+        // 验证密码复杂度
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,20}$/;
+        if (!passwordRegex.test(password)) {
+            alert('密码必须是6-20位的字母与数字组合');
+            return;
+        }
+
+        // 验证手机号码格式
+        const phoneRegex = /^1[3-9]\d{9}$/;
+        if (!phoneRegex.test(phone)) {
+            alert('请输入有效的手机号码');
+            return;
+        }
+
+        // 验证是否为空
+        if (!username || !password || !name || !phone || !captcha) {
+            alert('所有字段均为必填项');
+            return;
+        }
+
+        // 提交注册请求
+        $.get('http://127.0.0.1:5000/register/' + username + '/' + password + '/' + captcha + '/' + phone + '/' + name, function (data) {
+            alert(data['info']);
+            if (data['status'] === 'ok') {
+                window.location.href = '/'; // 注册成功后跳转到主页
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Eye-Disease-Analysis</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="/static/assets/img/favicon.png" rel="icon">
+    <link href="/static/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Vendor CSS Files -->
+    <link href="/static/assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="/static/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="/static/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="/static/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+    <link href="/static/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="/static/assets/css/style.css" rel="stylesheet">
+    <script src="/static/js/jquery.min.js" type="text/javascript" charset='utf-8'></script>
+
+</head>
+
+<body>
+
+<!-- ======= Header ======= -->
+<header id="header" class="header fixed-top" style="background-color: #338b67; padding: 8px 0;">
+    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+
+        <a href="/" class="logo d-flex align-items-center">
+            <span style="color: rgb(237, 245, 253);">Eye-Disease-Analysis</span>
+        </a>
+
+        <nav id="navbar" class="navbar">
+            <ul>
+                <li><a class="nav-link scrollto active" href="#" style="font-size: 20px;">首页</a></li>
+                <li><a class="nav-link scrollto" href="/predict/test_predict" style="font-size: 20px;">眼底彩照在线分析</a>
+                </li>
+                <li><a class="nav-link scrollto" href="/predict2/test_predict2" style="font-size: 20px;">OCT图像在线分析</a>
+                </li>
+                <li><a class="nav-link scrollto" href="/segment/test_segment" style="font-size: 20px;">图像分割</a>
+                </li>
+                <li><a class="nav-link scrollto" href="/upload" style="font-size: 20px;">上传记录</a></li>
+            </ul>
+            <i class="bi bi-list mobile-nav-toggle"></i>
+        </nav><!-- .navbar -->
+
+    </div>
+</header><!-- End Header -->
+
+<!-- ======= Hero Section ======= -->
+<section id="hero" class="hero d-flex align-items-center">
+
+    <div class="container" style="margin-top: 100px">
+        <div class="row">
+            <div class="col-lg-8 d-flex flex-column justify-content-center">
+                <h1 data-aos="fade-up">基于深度学习的眼部OCT影像分析系统</h1>
+                <h2 data-aos="fade-up" data-aos-delay="400" style="line-height: 1.8">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;眼部疾病的早期诊断对于防止视力下降乃至失明至关重要。本系统利用
+                    TensorFlow、Keras、PyTorch等深度学习框架构建CNN卷积神经网络和ResNet残差神经网络预训练模型，利用眼部疾病影像数据进行模型训练与验证，
+                    预测平均AUC最高接近99%，使用Flask框架结合Bootstrap前端技术搭建了一个交互式的分析预测平台，该系统可以大大提高疾病诊断的准确性和效率，为临床决策提供有力支持。</h2>
+                <div data-aos="fade-up" data-aos-delay="600">
+                    <div class="text-center text-lg-start">
+                        <a href="/predict/test_predict"
+                           class="btn-get-started scrollto d-inline-flex align-items-center justify-content-center align-self-center"
+                           onclick="handle()">
+                            <span>眼部图像</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a href="/predict2/test_predict2"
+                           class="btn-get-started scrollto d-inline-flex align-items-center justify-content-center align-self-center"
+                           onclick="handle()">
+                            <span>视网膜图像</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a href="/segment/test_segment"
+                           class="btn-get-started scrollto d-inline-flex align-items-center justify-content-center align-self-center"
+                           onclick="handle()">
+                            <span>图像分割</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 hero-img" data-aos="zoom-out" data-aos-delay="200">
+                <img src="/static/assets/img/header.png" class="img-fluid" style="width: 100%;height: 100%">
+            </div>
+        </div>
+        <div class="text-center" data-aos="fade-up" style="padding-top: 60px;" id="login_register">
+            <!-- 登录成功后显示欢迎信息 -->
+            <div id="welcome_info" style="display: none;">
+                <br>
+                <span style="font-size: 18px; color: rgb(40, 40, 100);">
+                    欢迎使用，<span id="welcome_name"></span>
+                </span>
+                <button id="logout_button" class="btn btn-danger" style="font-size: 14px; margin-left: 20px;">
+                    退出登录
+                </button>
+            </div>
+            <div id="login_form" style="display: none;">
+                <label style="font-size: 18px; color: rgb(40, 40, 100);">用户名：</label>
+                <input type="text" id="name"
+                       style="width: 150px; height: 40px; margin-right: 5px; border-radius: 10px; border: 0;"/>
+                <label style="font-size: 18px;color: rgb(40, 40, 100);">密&nbsp;&nbsp;&nbsp;码：</label>
+                <input id="password" type="password"
+                       style="width: 150px; height: 40px; margin-right: 5px; border-radius: 10px; border: 0;">
+                <br><br>
+                <!-- 验证码部分 -->
+                <label style="font-size: 18px;color: rgb(40, 40, 100);">验证码：</label>
+                <input id="captcha_input" type="text"
+                       style="width: 150px; height: 40px; margin-right: 5px; border-radius: 10px; border: 0;"/>
+                <img id="captcha" src="" style="height:40px; margin-right:10px;"/>
+                <button id="refresh_captcha"
+                        style="background-color:white;font-size:14px; color:black;border-radius:6px;border: 0">看不清，换一张
+                </button>
+                <br><br>
+                <button id="login_submit" class="btn btn-success" style="width: 80px; margin-left: 5px; color: white;">
+                    登录
+                </button>
+                <button id="reg_submit" class="btn btn-info" style="width: 80px; margin-left: 10px; color: white;">
+                    注册
+                </button>
+            </div>
+        </div>
+    </div>
+
+</section><!-- End Hero -->
+
+<main id="main">
+    <!-- ======= About Section ======= -->
+    <section id="about" class="about">
+
+        <div class="container" data-aos="fade-up">
+            <div class="row gx-0">
+                <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
+                    <div class="content">
+                        <h3>模型概述</h3>
+                        <h2>卷积神经网络</h2>
+                        <p>
+                            卷积神经网络（Convolutional Neural
+                            Network，CNN）是一种在计算机视觉领域取得了巨大成功的深度学习模型。它们的设计灵感来自于生物学中的视觉系统，旨在模拟人类视觉处理的方式。
+                        </p>
+                        <p>
+                            在过去的几年中，CNN已经在图像识别、目标检测、图像生成和许多其他领域取得了显著的进展，成为了计算机视觉和深度学习研究的重要组成部分。
+                        </p>
+                        <div class="text-center text-lg-start">
+                            <a href="/predict/test_predict"
+                               class="btn-read-more d-inline-flex align-items-center justify-content-center align-self-center"
+                               onclick="handle()">
+                                <span>图像分析</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
+                    <img src="/static/assets/img/intro.png" class="img-fluid" alt="">
+                </div>
+                <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
+                    <img src="/static/assets/img/intro2.png" class="img-fluid" alt="">
+                </div>
+                <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
+                    <div class="content">
+                        <h3>模型概述</h3>
+                        <h2>残差神经网络</h2>
+                        <p>
+                            ResNet架构的核心思想是残差学习（Residual Learning），通过引入跳跃连接（skip connection）或者残差连接（residual
+                            connection），使得网络能够更容易地训练更深的模型，并避免深度网络中常见的梯度消失和梯度爆炸问题。
+                        </p>
+                        <p>
+                            ResNet是一种通过引入残差学习和跳跃连接的深度卷积神经网络架构，解决了深度神经网络中的梯度消失问题，成为许多计算机视觉任务中广泛使用的基础模型之一。
+                        </p>
+                        <div class="text-center text-lg-start">
+                            <a href="/predict2/test_predict2"
+                               class="btn-read-more d-inline-flex align-items-center justify-content-center align-self-center"
+                               onclick="handle()">
+                                <span>图像分析</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
+                    <div class="content">
+                        <h3>模型概述</h3>
+                        <h2>全卷积神经网络</h2>
+                        <p>
+                            UNet是一种全卷积神经网络（FCN），其名称来源于其U形的网络结构。该模型由编码器（下采样部分）和解码器（上采样部分）组成，通过跳跃连接将编码器的特征图传递到解码器，以保留细节信息。
+                        </p>
+                        <div class="text-center text-lg-start">
+                            <a href="/segment/test_segment"
+                               class="btn-read-more d-inline-flex align-items-center justify-content-center align-self-center"
+                               onclick="handle()">
+                                <span>图像分析</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
+                    <img src="/static/assets/img/intro3.png" class="img-fluid" alt="">
+                </div>
+            </div>
+        </div>
+
+    </section><!-- End About Section -->
+
+
+</main><!-- End #main -->
+<footer id="footer" class="footer">
+    <div class="container">
+        <div class="copyright">
+            &copy; Copyright <strong><span>Eye-Disease-Analysis</span></strong>. All Rights Reserved
+        </div>
+    </div>
+</footer><!-- End Footer -->
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center">
+    <i class="bi bi-arrow-up-short"></i>
+</a>
+
+<!-- Vendor JS Files -->
+<script src="/static/assets/vendor/purecounter/purecounter_vanilla.js"></script>
+<script src="/static/assets/vendor/aos/aos.js"></script>
+<script src="/static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/static/assets/vendor/glightbox/js/glightbox.min.js"></script>
+<script src="/static/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+<script src="/static/assets/vendor/swiper/swiper-bundle.min.js"></script>
+<script src="/static/assets/vendor/php-email-form/validate.js"></script>
+
+<!-- Template Main JS File -->
+<script src="/static/assets/js/main.js"></script>
+<script type="text/javascript">
+    $(function () {
+        // 判断是否登录
+        $.get('http://127.0.0.1:5000/check_login', {},
+            function (data) {
+                console.log(data);
+                if (data['login'] === true) {
+                    $('#login_form').hide();
+                    $('#welcome_info').show();
+                    $('#welcome_name').text(data['username']);
+                } else {
+                    $('#login_form').show();
+                    $('#welcome_info').hide();
+                }
+            }
+        );
+
+        document.getElementById('refresh_captcha').onclick = function () {
+            document.getElementById('captcha').src = '/generate_captcha?' + new Date().getTime();
+        }
+
+        $("#reg_submit").click(function () {
+            window.location.href = '/register';
+        });
+
+        $("#login_submit").click(function () {
+            const name = $("#name").val();
+            const password = $("#password").val();
+            const captcha = $("#captcha_input").val();
+
+            console.log(name);
+            console.log(password);
+            console.log(captcha);
+
+            if ((name === undefined) || (password === undefined) || (name === '') || (password === '')) {
+                alert('字段不能为空！');
+                return
+            } else if (captcha === '') {
+                alert('请输入验证码！');
+                return;
+            }
+
+            $.get('http://127.0.0.1:5000/login/' + name + '/' + password + '/' + captcha, {},
+                function (data) {
+                    alert(data['info']);
+                    if (data['status'] === 'ok') {
+                        window.location.href = "/"
+                    }
+                }
+            );
+        });
+
+        $("#logout_button").click(function () {
+            $.ajax({
+                url: '/logout',
+                type: 'GET',
+                success: function (response) {
+                    window.location.href = "/"; // 退出后重定向到首页
+                }
+            });
+        });
+    });
+
+    function loadCaptcha() {
+        $.getJSON('/generate_captcha', function (data) {
+            // 更新验证码图片
+            $('#captcha').attr('src', 'data:image/png;base64,' + data.image);
+            // 保存验证码到全局变量
+            window.currentCaptcha = data.code;
+        });
+    }
+
+    $(document).ready(function () {
+        // 页面加载时加载验证码
+        loadCaptcha();
+
+        // 点击“换一张”按钮时重新加载验证码
+        $('#refresh_captcha').click(function () {
+            loadCaptcha();
+        });
+    });
+
+    function handle() {
+
+        // 判断用户是否登录
+        $.get('http://127.0.0.1:5000/check_login', {}, function (data) {
+            if (data['login'] === true) {
+                // 如果已登录，允许跳转
+                window.location.href = target.closest('a').href;
+            } else {
+                // 如果未登录，重定向到首页
+                window.location.href = '/';
+            }
+        });
+    }
+</script>
+</body>
+
+</html>
